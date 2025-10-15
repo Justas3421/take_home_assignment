@@ -57,35 +57,45 @@ class SensorPanel extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       alignment: WrapAlignment.center,
                       children: [
-                        FilledButton.tonal(
-                          onPressed: () {
-                            if (state.isCapturing) {
-                              bloc.add(PauseSensorCapture());
-                            } else {
-                              bloc.add(ResumeSensorCapture());
-                            }
-                          },
-                          style: FilledButton.styleFrom(
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(20),
-                            backgroundColor: state.isCapturing
-                                ? colorScheme.tertiaryContainer
-                                : colorScheme.primaryContainer,
-                            foregroundColor: state.isCapturing
-                                ? colorScheme.onTertiaryContainer
-                                : colorScheme.onPrimaryContainer,
+                        Semantics(
+                          button: true,
+                          label: state.isCapturing ? 'Pause capture' : 'Resume capture',
+                          hint: 'Toggles sensor data capture',
+                          child: FilledButton.tonal(
+                            onPressed: () {
+                              if (state.isCapturing) {
+                                bloc.add(PauseSensorCapture());
+                              } else {
+                                bloc.add(ResumeSensorCapture());
+                              }
+                            },
+                            style: FilledButton.styleFrom(
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(20),
+                              backgroundColor: state.isCapturing
+                                  ? colorScheme.tertiaryContainer
+                                  : colorScheme.primaryContainer,
+                              foregroundColor: state.isCapturing
+                                  ? colorScheme.onTertiaryContainer
+                                  : colorScheme.onPrimaryContainer,
+                            ),
+                            child: Icon(state.isCapturing ? Icons.pause_rounded : Icons.play_arrow_rounded, size: 32),
                           ),
-                          child: Icon(state.isCapturing ? Icons.pause_rounded : Icons.play_arrow_rounded, size: 32),
                         ),
 
-                        OutlinedButton(
-                          onPressed: () => bloc.add(ResetSensorCapture()),
-                          style: OutlinedButton.styleFrom(
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(20),
-                            side: BorderSide(color: colorScheme.outlineVariant),
+                        Semantics(
+                          button: true,
+                          label: 'Reset capture',
+                          hint: 'Resets captured sensor data',
+                          child: OutlinedButton(
+                            onPressed: () => bloc.add(ResetSensorCapture()),
+                            style: OutlinedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(20),
+                              side: BorderSide(color: colorScheme.outlineVariant),
+                            ),
+                            child: Icon(Icons.refresh_rounded, size: 28, color: colorScheme.onSurfaceVariant),
                           ),
-                          child: Icon(Icons.refresh_rounded, size: 28, color: colorScheme.onSurfaceVariant),
                         ),
 
                         Flexible(

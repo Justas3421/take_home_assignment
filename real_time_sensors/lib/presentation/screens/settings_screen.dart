@@ -39,6 +39,7 @@ class SettingsBottomSheet extends StatelessWidget {
                   max: 50,
                   divisions: 4,
                   label: '${state.settings.refreshRateHz} Hz',
+                  semanticFormatterCallback: (value) => '${value.round()} hertz',
                   activeColor: colorScheme.primary,
                   inactiveColor: colorScheme.surfaceContainerHighest,
                   thumbColor: colorScheme.onPrimary,
@@ -57,12 +58,17 @@ class SettingsBottomSheet extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _AxisChoiceChip(
-                      label: 'X',
-                      color: Colors.red.shade400,
-                      value: state.settings.showXAxis,
-                      onChanged: (val) =>
-                          context.read<SettingsBloc>().add(ToggleAxisVisibility(axis: 'x', isVisible: val)),
+                    Semantics(
+                      button: true,
+                      toggled: state.settings.showXAxis,
+                      label: 'X axis visibility',
+                      child: _AxisChoiceChip(
+                        label: 'X',
+                        color: Colors.red.shade400,
+                        value: state.settings.showXAxis,
+                        onChanged: (val) =>
+                            context.read<SettingsBloc>().add(ToggleAxisVisibility(axis: 'x', isVisible: val)),
+                      ),
                     ),
                     _AxisChoiceChip(
                       label: 'Y',
@@ -96,13 +102,18 @@ class SettingsBottomSheet extends StatelessWidget {
                         style: theme.textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
                       ),
                     ),
-                    Switch(
-                      value: state.settings.isDarkMode,
-                      onChanged: (val) => context.read<SettingsBloc>().add(UpdateThemeMode(val)),
-                      activeThumbColor: colorScheme.primary,
-                      activeTrackColor: colorScheme.primaryContainer,
-                      inactiveThumbColor: colorScheme.onSurfaceVariant,
-                      inactiveTrackColor: colorScheme.surfaceContainerHighest,
+                    Semantics(
+                      button: true,
+                      toggled: state.settings.isDarkMode,
+                      label: 'Dark mode',
+                      child: Switch(
+                        value: state.settings.isDarkMode,
+                        onChanged: (val) => context.read<SettingsBloc>().add(UpdateThemeMode(val)),
+                        activeThumbColor: colorScheme.primary,
+                        activeTrackColor: colorScheme.primaryContainer,
+                        inactiveThumbColor: colorScheme.onSurfaceVariant,
+                        inactiveTrackColor: colorScheme.surfaceContainerHighest,
+                      ),
                     ),
                   ],
                 ),
