@@ -50,9 +50,9 @@ class SensorPanel extends StatelessWidget {
               bloc: bloc,
               builder: (context, state) {
                 return LayoutBuilder(
-                  builder: (context, constraints) {
+                  builder: (context, asyncSnapshot) {
                     return Wrap(
-                      spacing: 16,
+                      spacing: 12,
                       runSpacing: 12,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       alignment: WrapAlignment.center,
@@ -75,7 +75,10 @@ class SensorPanel extends StatelessWidget {
                                 ? colorScheme.onTertiaryContainer
                                 : colorScheme.onPrimaryContainer,
                           ),
-                          child: Icon(state.isCapturing ? Icons.pause_rounded : Icons.play_arrow_rounded, size: 32),
+                          child: Icon(
+                            state.isCapturing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                            size: 24,
+                          ),
                         ),
 
                         OutlinedButton(
@@ -85,18 +88,20 @@ class SensorPanel extends StatelessWidget {
                             padding: const EdgeInsets.all(20),
                             side: BorderSide(color: colorScheme.outlineVariant),
                           ),
-                          child: Icon(Icons.refresh_rounded, size: 28, color: colorScheme.onSurfaceVariant),
+                          child: Icon(
+                            Icons.refresh_rounded,
+                            size: 24,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                         ),
 
-                        Flexible(
-                          child: SensorExportControls(
-                            sensorType: sensorType,
-                            bloc: bloc,
-                            screenshotService: screenshotService,
-                            csvExportService: csvExportService,
-                            fileSaveService: fileSaveService,
-                            chartKey: _chartKey,
-                          ),
+                        SensorExportControls(
+                          sensorType: sensorType,
+                          bloc: bloc,
+                          screenshotService: screenshotService,
+                          csvExportService: csvExportService,
+                          fileSaveService: fileSaveService,
+                          chartKey: _chartKey,
                         ),
                       ],
                     );
@@ -113,7 +118,10 @@ class SensorPanel extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 12.0),
                     child: Text(
                       state.errorMessage!,
-                      style: textTheme.bodyMedium?.copyWith(color: colorScheme.error, fontWeight: FontWeight.w500),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.error,
+                        fontWeight: FontWeight.w500,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   );

@@ -33,7 +33,7 @@ class SensorExportControls extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextButton.icon(
+        OutlinedButton.icon(
           onPressed: () async {
             final image = await screenshotService.captureWidget(chartKey);
             if (image != null) {
@@ -55,13 +55,22 @@ class SensorExportControls extends StatelessWidget {
             }
           },
           icon: Icon(Icons.camera_alt_rounded, color: colorScheme.primary),
-          label: Text('Capture chart', style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
-          style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
+          label: Text(
+            'Capture chart',
+            style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+          ),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            side: BorderSide(color: colorScheme.outline),
+          ),
         ),
         const SizedBox(height: 8),
-        TextButton.icon(
+        OutlinedButton.icon(
           onPressed: () async {
-            final String? csvValue = await csvExportService.exportSensorData(bloc.state.history, sensorType.name);
+            final String? csvValue = await csvExportService.exportSensorData(
+              bloc.state.history,
+              sensorType.name,
+            );
 
             if (context.mounted) {
               if (csvValue == null) {
@@ -79,7 +88,8 @@ class SensorExportControls extends StatelessWidget {
 
               await fileSaveService.saveCsv(
                 csvValue,
-                fileName: '${sensorType.name}_data_${DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now())}',
+                fileName:
+                    '${sensorType.name}_data_${DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now())}',
               );
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -93,8 +103,14 @@ class SensorExportControls extends StatelessWidget {
             }
           },
           icon: Icon(Icons.download_rounded, color: colorScheme.primary),
-          label: Text('Export data to CSV', style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
-          style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
+          label: Text(
+            'Export as CSV',
+            style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+          ),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            side: BorderSide(color: colorScheme.outline),
+          ),
         ),
       ],
     );
