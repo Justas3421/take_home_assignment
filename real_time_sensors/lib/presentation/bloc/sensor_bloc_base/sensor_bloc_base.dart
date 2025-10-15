@@ -73,7 +73,7 @@ abstract class SensorBlocBase<E extends SensorEvent, S extends SensorState> exte
   void _onResumeSensorCapture(ResumeSensorCapture event, Emitter<S> emit) {
     if (state.isCapturing) return;
     if (!state.sensorAvailable) {
-      emit(copyWith(isCapturing: false, errorMessage: 'Sensor not available.'));
+      emit(copyWith(isCapturing: false, errorMessage: 'Sensor not available on this device.'));
       return;
     }
     _sensorSubscription?.resume();

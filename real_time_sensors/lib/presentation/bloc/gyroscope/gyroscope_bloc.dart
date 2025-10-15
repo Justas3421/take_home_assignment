@@ -7,7 +7,7 @@ part 'gyroscope_state.dart';
 
 class GyroscopeBloc extends SensorBlocBase<SensorEvent, GyroscopeState> {
   GyroscopeBloc({required super.startSensorStreamUseCase, required super.settingsBloc})
-    : super(sensorType: SensorType.gyroscope, initialState: const GyroscopeState(sensorAvailable: true));
+    : super(sensorType: SensorType.gyroscope, initialState: const GyroscopeState());
 
   @override
   GyroscopeState copyWith({

@@ -15,4 +15,11 @@ abstract class SensorState extends Equatable {
 
   @override
   List<Object?> get props => [isCapturing, history, errorMessage, sensorAvailable];
+
+  SensorState copyWith({
+    bool? isCapturing,
+    List<SensorDataPoint>? history,
+    String? errorMessage,
+    bool? sensorAvailable,
+  });
 }

@@ -9,6 +9,7 @@ import 'package:real_time_sensors/presentation/bloc/gyroscope/gyroscope_bloc.dar
 import 'package:real_time_sensors/presentation/bloc/sensor_bloc_base/sensor_bloc_base.dart';
 import 'package:real_time_sensors/presentation/screens/settings_screen.dart';
 import 'package:real_time_sensors/presentation/widgets/app_lifecycle_handler.dart';
+import 'package:real_time_sensors/presentation/widgets/error_warning.dart';
 import 'package:real_time_sensors/presentation/widgets/sensor_panel.dart';
 
 class SensorScreen extends StatefulWidget {
@@ -129,12 +130,23 @@ class _SensorScreenState extends State<SensorScreen> with SingleTickerProviderSt
     final accelBloc = context.read<AccelerometerBloc>();
     final gyroBloc = context.read<GyroscopeBloc>();
 
-    if (newView == SensorType.accelerometer) {
-      gyroBloc.add(PauseSensorCapture());
-      accelBloc.add(ResumeSensorCapture());
-    } else {
-      accelBloc.add(PauseSensorCapture());
-      gyroBloc.add(ResumeSensorCapture());
+    switch (newView) {
+      case SensorType.accelerometer:
+        if (gyroBloc.state.isCapturing) {
+          gyroBloc.add(PauseSensorCapture());
+        }
+        if (accelBloc.state.isCapturing == false) {
+          accelBloc.add(ResumeSensorCapture());
+        }
+        break;
+      case SensorType.gyroscope:
+        if (accelBloc.state.isCapturing) {
+          accelBloc.add(PauseSensorCapture());
+        }
+        if (gyroBloc.state.isCapturing == false) {
+          gyroBloc.add(ResumeSensorCapture());
+        }
+        break;
     }
 
     setState(() {
@@ -164,6 +176,10 @@ class AccelerometerTab extends StatelessWidget {
       padding: Theme.of(context).cardTheme.margin ?? const EdgeInsets.all(0),
       child: BlocBuilder<AccelerometerBloc, AccelerometerState>(
         builder: (context, state) {
+          if (state.errorMessage != null) {
+            return ErrorWarning(message: state.errorMessage!);
+          }
+
           return SensorPanel(
             sensorType: SensorType.accelerometer,
             bloc: context.read<AccelerometerBloc>(),
@@ -195,6 +211,9 @@ class GyroscopeTab extends StatelessWidget {
       padding: Theme.of(context).cardTheme.margin ?? const EdgeInsets.all(0),
       child: BlocBuilder<GyroscopeBloc, GyroscopeState>(
         builder: (context, state) {
+          if (state.errorMessage != null) {
+            return ErrorWarning(message: state.errorMessage!);
+          }
           return SensorPanel(
             sensorType: SensorType.gyroscope,
             bloc: context.read<GyroscopeBloc>(),

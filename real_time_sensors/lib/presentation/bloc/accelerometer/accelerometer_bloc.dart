@@ -7,7 +7,7 @@ part 'accelerometer_state.dart';
 
 class AccelerometerBloc extends SensorBlocBase<AccelerometerEvent, AccelerometerState> {
   AccelerometerBloc({required super.startSensorStreamUseCase, required super.settingsBloc})
-    : super(sensorType: SensorType.accelerometer, initialState: const AccelerometerState(sensorAvailable: true));
+    : super(sensorType: SensorType.accelerometer, initialState: const AccelerometerState());
 
   @override
   AccelerometerState copyWith({

@@ -79,10 +79,7 @@ class SensorPanel extends StatelessWidget {
                                   ? colorScheme.onTertiaryContainer
                                   : colorScheme.onPrimaryContainer,
                             ),
-                            child: Icon(
-                            state.isCapturing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                            size: 24,
-                          ),
+                            child: Icon(state.isCapturing ? Icons.pause_rounded : Icons.play_arrow_rounded, size: 24),
                           ),
                         ),
 
@@ -97,12 +94,8 @@ class SensorPanel extends StatelessWidget {
                               padding: const EdgeInsets.all(20),
                               side: BorderSide(color: colorScheme.outlineVariant),
                             ),
-                            child: Icon(
-                            Icons.refresh_rounded,
-                            size: 24,
-                            color: colorScheme.onSurfaceVariant,
-                            ),
-                        ),
+                            child: Icon(Icons.refresh_rounded, size: 24, color: colorScheme.onSurfaceVariant),
+                          ),
                         ),
 
                         SensorExportControls(
@@ -128,10 +121,7 @@ class SensorPanel extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 12.0),
                     child: Text(
                       state.errorMessage!,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.error,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: textTheme.bodyMedium?.copyWith(color: colorScheme.error, fontWeight: FontWeight.w500),
                       textAlign: TextAlign.center,
                     ),
                   );

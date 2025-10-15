@@ -10,7 +10,8 @@ class GyroscopeState extends SensorState {
 
   @override
   List<Object?> get props => [isCapturing, history, sensorAvailable, errorMessage];
-
+  
+  @override
   GyroscopeState copyWith({
     bool? isCapturing,
     List<SensorDataPoint>? history,
@@ -21,6 +22,7 @@ class GyroscopeState extends SensorState {
       isCapturing: isCapturing ?? this.isCapturing,
       history: history ?? this.history,
       sensorAvailable: sensorAvailable ?? this.sensorAvailable,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }
