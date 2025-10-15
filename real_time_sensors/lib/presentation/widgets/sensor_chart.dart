@@ -108,121 +108,136 @@ class _SensorChartState extends State<SensorChart> {
                       ),
                     ),
 
-                    Expanded(
-                      child: LineChart(
-                        transformationConfig: FlTransformationConfig(
-                          scaleAxis: FlScaleAxis.horizontal,
-                          maxScale: 30.0,
-                          transformationController: _transformationController,
+                  Expanded(
+                    child: LineChart(
+                      transformationConfig: FlTransformationConfig(
+                        scaleAxis: FlScaleAxis.horizontal,
+                        maxScale: 30.0,
+                        transformationController: _transformationController,
+                      ),
+                      LineChartData(
+                        minX: 0,
+                        maxX: (data.length - 1).toDouble(),
+                        minY: _getMinY(data) - 1,
+                        maxY: _getMaxY(data) + 1,
+                        lineTouchData: LineTouchData(
+                          touchTooltipData: LineTouchTooltipData(
+                            tooltipPadding: const EdgeInsets.all(8),
+                            getTooltipItems: (spots) => spots.map((spot) {
+                              String axisLabel;
+                              Color axisColor;
+                              switch (spot.barIndex) {
+                                case 0:
+                                  axisLabel = 'X';
+                                  axisColor = chartColors.xAxis!;
+                                  break;
+                                case 1:
+                                  axisLabel = 'Y';
+                                  axisColor = chartColors.yAxis!;
+                                  break;
+                                case 2:
+                                  axisLabel = 'Z';
+                                  axisColor = chartColors.zAxis!;
+                                  break;
+                                default:
+                                  axisLabel = '';
+                                  axisColor = Colors.white;
+                              }
+                              return LineTooltipItem(
+                                '$axisLabel: ${spot.y.toStringAsFixed(2)}',
+                                textTheme.bodySmall!.copyWith(
+                                color: axisColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              );
+                            }).toList(),
+                          ),
                         ),
-                        LineChartData(
-                          minX: 0,
-                          maxX: (data.length - 1).toDouble(),
-                          minY: _getMinY(data) - 1,
-                          maxY: _getMaxY(data) + 1,
-                          lineTouchData: LineTouchData(
-                            touchTooltipData: LineTouchTooltipData(
-                              tooltipPadding: const EdgeInsets.all(8),
-                              getTooltipItems: (spots) => spots.map((spot) {
-                                String axisLabel;
-                                Color axisColor;
-                                switch (spot.barIndex) {
-                                  case 0:
-                                    axisLabel = 'X';
-                                    axisColor = chartColors.xAxis!;
-                                    break;
-                                  case 1:
-                                    axisLabel = 'Y';
-                                    axisColor = chartColors.yAxis!;
-                                    break;
-                                  case 2:
-                                    axisLabel = 'Z';
-                                    axisColor = chartColors.zAxis!;
-                                    break;
-                                  default:
-                                    axisLabel = '';
-                                    axisColor = Colors.white;
+                        gridData: FlGridData(
+                          drawVerticalLine: false,
+                          horizontalInterval: 1,
+                          getDrawingHorizontalLine: (value) => FlLine(
+                            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                          strokeWidth: 0.8,
+                        ),
+                        ),
+                        titlesData: FlTitlesData(
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: data.isNotEmpty,
+                              interval: data.isEmpty
+                                  ? 1.0
+                                  : (data.length / 5).floor().toDouble().clamp(
+                                    1.0,
+                                    data.length.toDouble(),
+                                  ),
+                              getTitlesWidget: (value, meta) {
+                                if (value == 0 || value == (data.length - 1)) {
+                                  return SideTitleWidget(
+                                    meta: meta,
+                                    child: Text(
+                                      value.toInt().toString(),
+                                      style: textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                    ),
+                                  );
                                 }
-                                return LineTooltipItem(
-                                  '$axisLabel: ${spot.y.toStringAsFixed(2)}',
-                                  textTheme.bodySmall!.copyWith(color: axisColor, fontWeight: FontWeight.bold),
-                                );
-                              }).toList(),
+                                return const SizedBox.shrink();
+                              },
                             ),
                           ),
-                          gridData: FlGridData(
-                            drawVerticalLine: false,
-                            horizontalInterval: 1,
-                            getDrawingHorizontalLine: (value) =>
-                                FlLine(color: colorScheme.outlineVariant.withValues(alpha: 0.3), strokeWidth: 0.8),
-                          ),
-                          titlesData: FlTitlesData(
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: data.isNotEmpty,
-                                interval: data.isEmpty
-                                    ? 1.0
-                                    : (data.length / 5).floor().toDouble().clamp(1.0, data.length.toDouble()),
-                                getTitlesWidget: (value, meta) {
-                                  if (value == 0 || value == (data.length - 1)) {
-                                    return SideTitleWidget(
-                                      meta: meta,
-                                      child: Text(
-                                        value.toInt().toString(),
-                                        style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
-                                      ),
-                                    );
-                                  }
-                                  return const SizedBox.shrink();
-                                },
-                              ),
-                            ),
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                interval: 1,
-                                getTitlesWidget: (value, meta) => Text(
-                                  value.toStringAsFixed(1),
-                                  style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              interval: 1,
+                              getTitlesWidget: (value, meta) => Text(
+                                value.toStringAsFixed(1),
+                                style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
                                 ),
-                                reservedSize: 32,
                               ),
-                            ),
-                            topTitles: const AxisTitles(),
-                            rightTitles: const AxisTitles(),
-                          ),
-                          borderData: FlBorderData(
-                            show: true,
-                            border: Border(
-                              left: BorderSide(color: colorScheme.outlineVariant, width: 1.2),
-                              bottom: BorderSide(color: colorScheme.outlineVariant, width: 1.2),
+                            reservedSize: 32,
                             ),
                           ),
-                          lineBarsData: [
-                            if (settingsState.settings.showXAxis)
-                              _buildLine(data.map((e) => e.x).toList(), chartColors.xAxis!, 'X'),
-                            if (settingsState.settings.showYAxis)
-                              _buildLine(data.map((e) => e.y).toList(), chartColors.yAxis!, 'Y'),
-                            if (settingsState.settings.showZAxis)
-                              _buildLine(data.map((e) => e.z).toList(), chartColors.zAxis!, 'Z'),
-                          ],
+                          topTitles: const AxisTitles(),
+                          rightTitles: const AxisTitles(),
                         ),
+                        borderData: FlBorderData(
+                          show: true,
+                          border: Border(
+                            left: BorderSide(color: colorScheme.outlineVariant, width: 1.2),
+                            bottom: BorderSide(color: colorScheme.outlineVariant, width: 1.2),
+                          ),
+                        ),
+                        lineBarsData: [
+                          if (settingsState.settings.showXAxis)
+                            _buildLine(data.map((e) => e.x).toList(), chartColors.xAxis!, 'X'),
+                          if (settingsState.settings.showYAxis)
+                            _buildLine(data.map((e) => e.y).toList(), chartColors.yAxis!, 'Y'),
+                          if (settingsState.settings.showZAxis)
+                            _buildLine(data.map((e) => e.z).toList(), chartColors.zAxis!, 'Z'),
+                        ],
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (settingsState.settings.showXAxis) _LegendItem(color: chartColors.xAxis!, label: 'X (Red)'),
-                        const SizedBox(width: 24),
-                        if (settingsState.settings.showYAxis)
-                          _LegendItem(color: chartColors.yAxis!, label: 'Y (Green)'),
-                        const SizedBox(width: 24),
-                        if (settingsState.settings.showZAxis) _LegendItem(color: chartColors.zAxis!, label: 'Z (Blue)'),
-                      ],
-                    ),
-                  ],
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (settingsState.settings.showXAxis)
+                      _LegendItem(color: chartColors.xAxis!, label: 'X (Red)'),
+                      const SizedBox(width: 12),
+                      if (settingsState.settings.showYAxis)
+                         
+                      _LegendItem(color: chartColors.yAxis!, label: 'Y (Green)'),
+                      const SizedBox(width: 12),
+                      if (settingsState.settings.showZAxis)
+                      _LegendItem(color: chartColors.zAxis!, label: 'Z (Blue)'),
+                    ],
+                  ),
+                ],
                 ),
               ),
             );

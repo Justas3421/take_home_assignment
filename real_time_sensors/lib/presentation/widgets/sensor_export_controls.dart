@@ -37,7 +37,7 @@ class SensorExportControls extends StatelessWidget {
           button: true,
           label: 'Capture chart as image',
           hint: 'Saves a screenshot of the current chart to your device',
-          child: TextButton.icon(
+          child: OutlinedButton.icon(
             onPressed: () async {
               final image = await screenshotService.captureWidget(chartKey);
               if (image != null) {
@@ -60,7 +60,10 @@ class SensorExportControls extends StatelessWidget {
             },
             icon: Icon(Icons.camera_alt_rounded, color: colorScheme.primary),
             label: Text('Capture chart', style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
-            style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              side: BorderSide(color: colorScheme.outline),
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -68,7 +71,7 @@ class SensorExportControls extends StatelessWidget {
           button: true,
           label: 'Export data to CSV',
           hint: 'Exports currently captured sensor data as a CSV file',
-          child: TextButton.icon(
+          child: OutlinedButton.icon(
             onPressed: () async {
               final String? csvValue = await csvExportService.exportSensorData(bloc.state.history, sensorType.name);
 
@@ -102,11 +105,11 @@ class SensorExportControls extends StatelessWidget {
               }
             },
             icon: Icon(Icons.download_rounded, color: colorScheme.primary),
-            label: Text(
-              'Export data to CSV',
-              style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+            label: Text('Export as CSV', style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              side: BorderSide(color: colorScheme.outline),
             ),
-            style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
           ),
         ),
       ],
