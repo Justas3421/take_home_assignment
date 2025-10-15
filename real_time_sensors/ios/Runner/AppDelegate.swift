@@ -2,7 +2,7 @@ import UIKit
 import Flutter
 import CoreMotion
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
   let motionManager = CMMotionManager()
 
