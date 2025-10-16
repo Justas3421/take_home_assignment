@@ -72,7 +72,7 @@ void main() {
     late MockStreamSubscription<SensorDataPoint> mockSensorSubscription;
     const testSensorType = SensorType.accelerometer;
     final testDataPoint = SensorDataPoint(timestamp: DateTime.now(), x: 1, y: 1, z: 1);
-    const initialSettings = AppSettings(historySize: 100, refreshRateHz: 10);
+    const initialSettings = AppSettings(refreshRateHz: 10);
 
     setUp(() {
       mockUseCase = MockStartSensorStreamUseCase();
@@ -236,41 +236,13 @@ void main() {
           bloc.add(const StartSensorCapture());
           await bloc.stream.firstWhere((s) => s.isCapturing);
           settingsStreamController.add(
-            const SettingsState(settings: AppSettings(historySize: 100, refreshRateHz: 20)),
+            const SettingsState(settings: AppSettings(refreshRateHz: 20)),
           );
         },
         skip: 1,
         expect: () => [const TestSensorState(isCapturing: true, history: [])],
         verify: (_) {},
       );
-
-      blocTest<TestSensorBloc, TestSensorState>(
-        'trims history to configured historySize',
-        build: () {
-          when(() => mockUseCase.call(any())).thenAnswer((_) => sensorStreamController.stream);
-          when(() => mockSettingsBloc.state).thenReturn(
-            const SettingsState(settings: AppSettings(historySize: 3, refreshRateHz: 1000)),
-          );
-          when(() => mockSettingsBloc.stream).thenAnswer((_) => settingsStreamController.stream);
-          return buildBloc();
-        },
-        act: (bloc) async {
-          bloc.add(const StartSensorCapture());
-          await bloc.stream.firstWhere((s) => s.isCapturing);
-          for (var i = 0; i < 5; i++) {
-            sensorStreamController.add(
-              SensorDataPoint(timestamp: DateTime(2025, 1, 1, i), x: i.toDouble(), y: 0, z: 0),
-            );
-            await Future<void>.delayed(const Duration(milliseconds: 2));
-          }
-        },
-        skip: 1,
-        expect: () => predicate<List<TestSensorState>>((states) {
-          final last = states.last;
-          return last.history.length == 3 && last.history.first.x == 2 && last.history.last.x == 4;
-        }),
-      );
-      
     });
 
     group('Pause and Resume', () {

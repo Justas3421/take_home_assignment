@@ -156,7 +156,7 @@ abstract class SensorBlocBase<E extends SensorEvent, S extends SensorState> exte
 
   int get _effectiveMaxHistory {
     final configured = _settingsBloc.state.settings.historySize;
-    if (configured > 0) return configured;
+    if (configured.size > 0) return configured.size;
     return 300;
   }
 

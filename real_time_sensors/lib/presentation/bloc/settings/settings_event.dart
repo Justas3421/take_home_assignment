@@ -21,7 +21,7 @@ class UpdateThemeMode extends SettingsEvent {
 }
 
 class UpdateHistorySize extends SettingsEvent {
-  final int historySize;
+  final HistorySizeOption historySize;
   const UpdateHistorySize(this.historySize);
 }
 

@@ -1,11 +1,20 @@
 import 'package:equatable/equatable.dart';
 
+enum HistorySizeOption {
+  small(300),
+  medium(600),
+  large(900);
+
+  final int size;
+  const HistorySizeOption(this.size);
+}
+
 class AppSettings extends Equatable {
   final int refreshRateHz;
   final bool showXAxis;
   final bool showYAxis;
   final bool showZAxis;
-  final int historySize;
+  final HistorySizeOption historySize;
   final bool isDarkMode;
 
   const AppSettings({
@@ -13,7 +22,7 @@ class AppSettings extends Equatable {
     this.showXAxis = true,
     this.showYAxis = true,
     this.showZAxis = true,
-    this.historySize = 300,
+    this.historySize = HistorySizeOption.small,
     this.isDarkMode = true,
   });
 
@@ -24,7 +33,7 @@ class AppSettings extends Equatable {
     bool? showXAxis,
     bool? showYAxis,
     bool? showZAxis,
-    int? historySize,
+    HistorySizeOption? historySize,
     bool? isDarkMode,
   }) {
     return AppSettings(
@@ -38,12 +47,5 @@ class AppSettings extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-    refreshRateHz,
-    showXAxis,
-    showYAxis,
-    showZAxis,
-    historySize,
-    isDarkMode,
-  ];
+  List<Object?> get props => [refreshRateHz, showXAxis, showYAxis, showZAxis, historySize, isDarkMode];
 }

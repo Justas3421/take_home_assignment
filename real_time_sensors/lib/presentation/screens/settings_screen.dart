@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:real_time_sensors/domain/models/app_settings.dart';
 import 'package:real_time_sensors/presentation/bloc/settings/settings_bloc.dart';
 
 class SettingsBottomSheet extends StatelessWidget {
@@ -7,7 +8,6 @@ class SettingsBottomSheet extends StatelessWidget {
   static const double _kRefreshRateMin = 10;
   static const double _kRefreshRateMax = 50;
   static const int _kRefreshRateDivisions = 4;
-  static const List<int> _kHistorySizeOptions = [300, 600, 900];
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,6 @@ class SettingsBottomSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
 
-                // Refresh Rate
                 _SectionTitle(
                   title: 'Refresh Rate (Hz)',
                   icon: Icons.refresh_rounded,
@@ -55,7 +54,6 @@ class SettingsBottomSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // Displayed Axes
                 _SectionTitle(
                   title: 'Displayed Axes',
                   icon: Icons.line_axis_rounded,
@@ -90,21 +88,15 @@ class SettingsBottomSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
 
-                // History Size
-                _SectionTitle(
-                  title: 'History Size',
-                  icon: Icons.history_rounded,
-                  color: colorScheme.onSurfaceVariant,
-                ),
+                _SectionTitle(title: 'History Size', icon: Icons.history_rounded, color: colorScheme.onSurfaceVariant),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: _kHistorySizeOptions.map((size) {
+                  children: HistorySizeOption.values.map((size) {
                     return ChoiceChip(
-                      label: Text('$size'),
+                      label: Text('${size.size} pts'),
                       selected: state.settings.historySize == size,
-                      onSelected: (_) =>
-                          context.read<SettingsBloc>().add(UpdateHistorySize(size)),
+                      onSelected: (_) => context.read<SettingsBloc>().add(UpdateHistorySize(size)),
                       selectedColor: colorScheme.primary,
                       backgroundColor: colorScheme.surfaceContainerHighest,
                       labelStyle: theme.textTheme.labelLarge?.copyWith(
@@ -116,9 +108,7 @@ class SettingsBottomSheet extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                         side: BorderSide(
-                          color: state.settings.historySize == size
-                              ? colorScheme.primary
-                              : colorScheme.outlineVariant,
+                          color: state.settings.historySize == size ? colorScheme.primary : colorScheme.outlineVariant,
                           width: 1.2,
                         ),
                       ),
@@ -127,7 +117,6 @@ class SettingsBottomSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
 
-                // App Theme
                 _SectionTitle(
                   title: 'App Theme',
                   icon: Icons.brightness_4_rounded,
