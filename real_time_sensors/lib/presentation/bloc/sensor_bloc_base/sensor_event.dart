@@ -22,13 +22,23 @@ class _SensorErrorOccurred extends SensorEvent {
   List<Object?> get props => [message];
 }
 
-class StartSensorCapture extends SensorEvent {}
+class StartSensorCapture extends SensorEvent {
+  final bool clearHistory;
+  final bool forceRestart;
+  const StartSensorCapture({this.clearHistory = true, this.forceRestart = false});
+}
 
-class PauseSensorCapture extends SensorEvent {}
+class PauseSensorCapture extends SensorEvent {
+  const PauseSensorCapture();
+}
 
-class ResumeSensorCapture extends SensorEvent {}
+class ResumeSensorCapture extends SensorEvent {
+  const ResumeSensorCapture();
+}
 
-class ResetSensorCapture extends SensorEvent {}
+class ResetSensorCapture extends SensorEvent {
+  const ResetSensorCapture();
+}
 
 class AppLifecycleChanged extends SensorEvent {
   final AppLifecycleState state;

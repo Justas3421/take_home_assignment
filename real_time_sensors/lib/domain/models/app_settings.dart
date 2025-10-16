@@ -2,8 +2,6 @@ import 'package:equatable/equatable.dart';
 
 class AppSettings extends Equatable {
   final int refreshRateHz;
-  final double chartScale;
-  final bool autoScale;
   final bool showXAxis;
   final bool showYAxis;
   final bool showZAxis;
@@ -12,8 +10,6 @@ class AppSettings extends Equatable {
 
   const AppSettings({
     this.refreshRateHz = 30,
-    this.chartScale = 10.0,
-    this.autoScale = true,
     this.showXAxis = true,
     this.showYAxis = true,
     this.showZAxis = true,
@@ -33,8 +29,6 @@ class AppSettings extends Equatable {
   }) {
     return AppSettings(
       refreshRateHz: refreshRateHz ?? this.refreshRateHz,
-      chartScale: chartScale ?? this.chartScale,
-      autoScale: autoScale ?? this.autoScale,
       showXAxis: showXAxis ?? this.showXAxis,
       showYAxis: showYAxis ?? this.showYAxis,
       showZAxis: showZAxis ?? this.showZAxis,
@@ -46,8 +40,6 @@ class AppSettings extends Equatable {
   @override
   List<Object?> get props => [
     refreshRateHz,
-    chartScale,
-    autoScale,
     showXAxis,
     showYAxis,
     showZAxis,

@@ -12,8 +12,7 @@ import 'package:rxdart/rxdart.dart';
 part 'sensor_event.dart';
 part 'sensor_state.dart';
 
-abstract class SensorBlocBase<E extends SensorEvent, S extends SensorState>
-    extends Bloc<SensorEvent, S> {
+abstract class SensorBlocBase<E extends SensorEvent, S extends SensorState> extends Bloc<SensorEvent, S> {
   final StartSensorStreamUseCase _startSensorStreamUseCase;
   final SettingsBloc _settingsBloc;
   final SensorType _sensorType;
@@ -40,17 +39,16 @@ abstract class SensorBlocBase<E extends SensorEvent, S extends SensorState>
     on<_SensorErrorOccurred>(_onSensorErrorOccurred);
     on<AppLifecycleChanged>(_onAppLifecycleChanged);
 
-    _settingsSubscription = _settingsBloc.stream
-        .map((s) => s.settings.refreshRateHz)
-        .distinct()
-        .listen((refreshRateHz) {
-          debugPrint('${_sensorType.name} BLoC: Refresh rate changed → $refreshRateHz Hz');
-          _restartSensorStream();
-        });
+    _settingsSubscription = _settingsBloc.stream.map((s) => s.settings.refreshRateHz).distinct().listen((
+      refreshRateHz,
+    ) {
+      debugPrint('${_sensorType.name} BLoC: Refresh rate changed → $refreshRateHz Hz');
+      add(const StartSensorCapture(forceRestart: true, clearHistory: false));
+    });
   }
 
   Future<void> _onStartSensorCapture(StartSensorCapture event, Emitter<S> emit) async {
-    if (state.isCapturing) return;
+    if (state.isCapturing && !event.forceRestart) return;
 
     final available = await _checkSensorAvailability();
     emit(copyWith(sensorAvailable: available));
@@ -130,16 +128,10 @@ abstract class SensorBlocBase<E extends SensorEvent, S extends SensorState>
         .listen(
           (data) => add(_SensorDataReceived(data)),
           onError: (error, _) => add(_SensorErrorOccurred(error.toString())),
-          onDone: () => add(PauseSensorCapture()),
+          onDone: () => add(const PauseSensorCapture()),
         );
 
     debugPrint('${_sensorType.name} stream started @ $intervalMs ms interval.');
-  }
-
-  void _restartSensorStream() {
-    _sensorSubscription?.cancel();
-    _sensorSubscription = null;
-    _startListeningToSensor();
   }
 
   Future<void> _onResetSensorCapture(ResetSensorCapture event, Emitter<S> emit) async {
@@ -176,10 +168,5 @@ abstract class SensorBlocBase<E extends SensorEvent, S extends SensorState>
     await super.close();
   }
 
-  S copyWith({
-    bool? isCapturing,
-    List<SensorDataPoint>? history,
-    String? errorMessage,
-    bool? sensorAvailable,
-  });
+  S copyWith({bool? isCapturing, List<SensorDataPoint>? history, String? errorMessage, bool? sensorAvailable});
 }

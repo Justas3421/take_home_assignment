@@ -131,7 +131,7 @@ void main() {
         'emits [capturing, data] when sensor is available and data is received',
         build: buildBloc,
         act: (bloc) async {
-          bloc.add(StartSensorCapture());
+          bloc.add(const StartSensorCapture());
 
           await bloc.stream.firstWhere((s) => s.isCapturing == true);
 
@@ -155,7 +155,7 @@ void main() {
           when(() => mockUseCase.isAvailable(any())).thenAnswer((_) async => false);
           return buildBloc();
         },
-        act: (bloc) => bloc.add(StartSensorCapture()),
+        act: (bloc) => bloc.add(const StartSensorCapture()),
         expect: () => [
           const TestSensorState(isCapturing: false, history: []),
           const TestSensorState(
@@ -176,7 +176,7 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(StartSensorCapture());
+          bloc.add(const StartSensorCapture());
           await bloc.stream.firstWhere((s) => s.isCapturing);
           sensorStreamController.addError('boom');
         },
@@ -194,7 +194,7 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(StartSensorCapture());
+          bloc.add(const StartSensorCapture());
           await bloc.stream.firstWhere((s) => s.isCapturing);
           await sensorStreamController.close();
         },
@@ -233,7 +233,7 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(StartSensorCapture());
+          bloc.add(const StartSensorCapture());
           await bloc.stream.firstWhere((s) => s.isCapturing);
           settingsStreamController.add(
             const SettingsState(settings: AppSettings(historySize: 100, refreshRateHz: 20)),
@@ -255,7 +255,7 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(StartSensorCapture());
+          bloc.add(const StartSensorCapture());
           await bloc.stream.firstWhere((s) => s.isCapturing);
           for (var i = 0; i < 5; i++) {
             sensorStreamController.add(
@@ -278,10 +278,10 @@ void main() {
         'emits [not capturing] on PauseSensorCapture and pauses subscription',
         build: buildBloc,
         act: (bloc) async {
-          bloc.add(StartSensorCapture());
+          bloc.add(const StartSensorCapture());
           await bloc.stream.firstWhere((s) => s.isCapturing == true);
 
-          bloc.add(PauseSensorCapture());
+          bloc.add(const PauseSensorCapture());
         },
 
         skip: 1,
@@ -302,7 +302,7 @@ void main() {
         'clears history and restarts the stream',
         build: buildBloc,
         seed: () => TestSensorState(isCapturing: true, history: initialHistory),
-        act: (bloc) => bloc.add(ResetSensorCapture()),
+        act: (bloc) => bloc.add(const ResetSensorCapture()),
         expect: () => [const TestSensorState(isCapturing: true, history: [])],
         verify: (_) {
           verify(() => mockUseCase.isAvailable(testSensorType)).called(1);

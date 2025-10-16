@@ -64,9 +64,9 @@ class SensorPanel extends StatelessWidget {
                           child: FilledButton.tonal(
                             onPressed: () {
                               if (state.isCapturing) {
-                                bloc.add(PauseSensorCapture());
+                                bloc.add(const PauseSensorCapture());
                               } else {
-                                bloc.add(ResumeSensorCapture());
+                                bloc.add(const ResumeSensorCapture());
                               }
                             },
                             style: FilledButton.styleFrom(
@@ -84,7 +84,7 @@ class SensorPanel extends StatelessWidget {
                           label: 'Reset capture',
                           hint: 'Resets captured sensor data',
                           child: OutlinedButton(
-                            onPressed: () => bloc.add(ResetSensorCapture()),
+                            onPressed: () => bloc.add(const ResetSensorCapture()),
                             style: OutlinedButton.styleFrom(
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(20),

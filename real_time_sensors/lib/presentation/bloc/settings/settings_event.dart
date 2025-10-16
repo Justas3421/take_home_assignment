@@ -9,16 +9,6 @@ class UpdateRefreshRate extends SettingsEvent {
   const UpdateRefreshRate(this.refreshRateHz);
 }
 
-class UpdateChartScale extends SettingsEvent {
-  final double chartScale;
-  const UpdateChartScale(this.chartScale);
-}
-
-class ToggleAutoScale extends SettingsEvent {
-  final bool autoScale;
-  const ToggleAutoScale(this.autoScale);
-}
-
 class ToggleAxisVisibility extends SettingsEvent {
   final String axis;
   final bool isVisible;
@@ -29,3 +19,9 @@ class UpdateThemeMode extends SettingsEvent {
   final bool isDarkMode;
   const UpdateThemeMode(this.isDarkMode);
 }
+
+class UpdateHistorySize extends SettingsEvent {
+  final int historySize;
+  const UpdateHistorySize(this.historySize);
+}
+

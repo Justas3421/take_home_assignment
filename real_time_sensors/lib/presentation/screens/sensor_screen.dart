@@ -33,9 +33,9 @@ class _SensorScreenState extends State<SensorScreen> with SingleTickerProviderSt
     _tabController = TabController(length: SensorType.values.length, vsync: this);
     _tabController.addListener(_handleTabChange);
 
-    context.read<AccelerometerBloc>().add(StartSensorCapture());
-    context.read<GyroscopeBloc>().add(StartSensorCapture());
-    context.read<GyroscopeBloc>().add(PauseSensorCapture());
+    context.read<AccelerometerBloc>().add(const StartSensorCapture());
+    context.read<GyroscopeBloc>().add(const StartSensorCapture());
+    context.read<GyroscopeBloc>().add(const PauseSensorCapture());
   }
 
   @override
@@ -133,18 +133,18 @@ class _SensorScreenState extends State<SensorScreen> with SingleTickerProviderSt
     switch (newView) {
       case SensorType.accelerometer:
         if (gyroBloc.state.isCapturing) {
-          gyroBloc.add(PauseSensorCapture());
+          gyroBloc.add(const PauseSensorCapture());
         }
         if (accelBloc.state.isCapturing == false) {
-          accelBloc.add(ResumeSensorCapture());
+          accelBloc.add(const ResumeSensorCapture());
         }
         break;
       case SensorType.gyroscope:
         if (accelBloc.state.isCapturing) {
-          accelBloc.add(PauseSensorCapture());
+          accelBloc.add(const PauseSensorCapture());
         }
         if (gyroBloc.state.isCapturing == false) {
-          gyroBloc.add(ResumeSensorCapture());
+          gyroBloc.add(const ResumeSensorCapture());
         }
         break;
     }

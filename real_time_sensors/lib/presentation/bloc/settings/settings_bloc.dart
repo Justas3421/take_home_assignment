@@ -11,14 +11,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       emit(state.copyWith(settings: state.settings.copyWith(refreshRateHz: event.refreshRateHz)));
     });
 
-    on<UpdateChartScale>((event, emit) {
-      emit(state.copyWith(settings: state.settings.copyWith(chartScale: event.chartScale)));
-    });
-
-    on<ToggleAutoScale>((event, emit) {
-      emit(state.copyWith(settings: state.settings.copyWith(autoScale: event.autoScale)));
-    });
-
     on<ToggleAxisVisibility>((event, emit) {
       AppSettings updatedSettings = state.settings;
       if (event.axis == 'x') {
@@ -33,6 +25,10 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
     on<UpdateThemeMode>((event, emit) {
       emit(state.copyWith(settings: state.settings.copyWith(isDarkMode: event.isDarkMode)));
+    });
+
+    on<UpdateHistorySize>((event, emit) {
+      emit(state.copyWith(settings: state.settings.copyWith(historySize: event.historySize)));
     });
   }
 }
