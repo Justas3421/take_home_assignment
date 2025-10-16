@@ -54,222 +54,194 @@ class _SensorChartState extends State<SensorChart> {
             final minY = min - pad;
             final maxY = max + pad;
             final yInterval = _calculateYInterval(minY, maxY);
-            return SizedBox(
-              height: 200,
-              width: double.infinity,
-              child: Semantics(
-                container: true,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              widget.sensorType.name,
-                              style: textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: colorScheme.onSurface,
+            return Semantics(
+              container: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            widget.sensorType.name,
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSurface,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+
+                        Row(
+                          children: [
+                            Tooltip(
+                              message: 'Reset Zoom',
+                              child: Semantics(
+                                button: true,
+                                label: 'Reset zoom',
+                                hint: 'Resets chart zoom and pan',
+                                child: IconButton(
+                                  icon: Icon(Icons.zoom_out_map_rounded, color: colorScheme.onSurfaceVariant),
+                                  onPressed: _resetZoom,
+                                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                                  padding: EdgeInsets.zero,
+                                  visualDensity: VisualDensity.compact,
+                                ),
                               ),
-                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Tooltip(
+                              message: 'Zoom In',
+                              child: Semantics(
+                                button: true,
+                                label: 'Zoom in',
+                                hint: 'Increases chart zoom level',
+                                child: IconButton(
+                                  icon: Icon(Icons.zoom_in_rounded, color: colorScheme.onSurfaceVariant),
+                                  onPressed: _zoomIn,
+                                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                                  padding: EdgeInsets.zero,
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                              ),
+                            ),
+                            Tooltip(
+                              message: 'Zoom Out',
+                              child: Semantics(
+                                button: true,
+                                label: 'Zoom out',
+                                hint: 'Decreases chart zoom level',
+                                child: IconButton(
+                                  icon: Icon(Icons.zoom_out_rounded, color: colorScheme.onSurfaceVariant),
+                                  onPressed: _zoomOut,
+                                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                                  padding: EdgeInsets.zero,
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Expanded(
+                    child: LineChart(
+                      transformationConfig: FlTransformationConfig(
+                        scaleAxis: FlScaleAxis.horizontal,
+                        maxScale: 30.0,
+                        transformationController: _transformationController,
+                      ),
+                      LineChartData(
+                        minX: 0,
+                        maxX: (data.length - 1).toDouble(),
+                        minY: minY,
+                        maxY: maxY,
+                        lineTouchData: LineTouchData(
+                          touchTooltipData: LineTouchTooltipData(
+                            tooltipPadding: const EdgeInsets.all(8),
+                            getTooltipItems: (spots) => spots.map((spot) {
+                              String axisLabel;
+                              Color axisColor;
+                              switch (spot.barIndex) {
+                                case 0:
+                                  axisLabel = 'X';
+                                  axisColor = chartColors.xAxis!;
+                                  break;
+                                case 1:
+                                  axisLabel = 'Y';
+                                  axisColor = chartColors.yAxis!;
+                                  break;
+                                case 2:
+                                  axisLabel = 'Z';
+                                  axisColor = chartColors.zAxis!;
+                                  break;
+                                default:
+                                  axisLabel = '';
+                                  axisColor = Colors.white;
+                              }
+                              return LineTooltipItem(
+                                '$axisLabel: ${spot.y.toStringAsFixed(2)}',
+                                textTheme.bodySmall!.copyWith(color: axisColor, fontWeight: FontWeight.bold),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        gridData: FlGridData(
+                          drawVerticalLine: false,
+                          horizontalInterval: 1,
+                          getDrawingHorizontalLine: (value) =>
+                              FlLine(color: colorScheme.outlineVariant.withValues(alpha: 0.3), strokeWidth: 0.8),
+                        ),
+                        titlesData: FlTitlesData(
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: data.isNotEmpty,
+                              interval: data.isEmpty
+                                  ? 1.0
+                                  : (data.length / 5).floor().toDouble().clamp(1.0, data.length.toDouble()),
+                              getTitlesWidget: (value, meta) {
+                                if (value == 0 || value == (data.length - 1)) {
+                                  return SideTitleWidget(
+                                    meta: meta,
+                                    child: Text(
+                                      value.toInt().toString(),
+                                      style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                                    ),
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              },
                             ),
                           ),
-
-                          Row(
-                            children: [
-                              Tooltip(
-                                message: 'Reset Zoom',
-                                child: Semantics(
-                                  button: true,
-                                  label: 'Reset zoom',
-                                  hint: 'Resets chart zoom and pan',
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.zoom_out_map_rounded,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                    onPressed: _resetZoom,
-                                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                                    padding: EdgeInsets.zero,
-                                    visualDensity: VisualDensity.compact,
-                                  ),
-                                ),
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              interval: yInterval,
+                              getTitlesWidget: (value, meta) => Text(
+                                value.toStringAsFixed(1),
+                                style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                               ),
-                              Tooltip(
-                                message: 'Zoom In',
-                                child: Semantics(
-                                  button: true,
-                                  label: 'Zoom in',
-                                  hint: 'Increases chart zoom level',
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.zoom_in_rounded,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                    onPressed: _zoomIn,
-                                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                                    padding: EdgeInsets.zero,
-                                    visualDensity: VisualDensity.compact,
-                                  ),
-                                ),
-                              ),
-                              Tooltip(
-                                message: 'Zoom Out',
-                                child: Semantics(
-                                  button: true,
-                                  label: 'Zoom out',
-                                  hint: 'Decreases chart zoom level',
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.zoom_out_rounded,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                    onPressed: _zoomOut,
-                                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                                    padding: EdgeInsets.zero,
-                                    visualDensity: VisualDensity.compact,
-                                  ),
-                                ),
-                              ),
-                            ],
+                              reservedSize: 32,
+                            ),
                           ),
+                          topTitles: const AxisTitles(),
+                          rightTitles: const AxisTitles(),
+                        ),
+                        borderData: FlBorderData(
+                          show: true,
+                          border: Border(
+                            left: BorderSide(color: colorScheme.outlineVariant, width: 1.2),
+                            bottom: BorderSide(color: colorScheme.outlineVariant, width: 1.2),
+                          ),
+                        ),
+                        lineBarsData: [
+                          if (settingsState.settings.showXAxis)
+                            _buildLine(data.map((e) => e.x).toList(), chartColors.xAxis!, 'X'),
+                          if (settingsState.settings.showYAxis)
+                            _buildLine(data.map((e) => e.y).toList(), chartColors.yAxis!, 'Y'),
+                          if (settingsState.settings.showZAxis)
+                            _buildLine(data.map((e) => e.z).toList(), chartColors.zAxis!, 'Z'),
                         ],
                       ),
                     ),
+                  ),
 
-                    Expanded(
-                      child: LineChart(
-                        transformationConfig: FlTransformationConfig(
-                          scaleAxis: FlScaleAxis.horizontal,
-                          maxScale: 30.0,
-                          transformationController: _transformationController,
-                        ),
-                        LineChartData(
-                          minX: 0,
-                          maxX: (data.length - 1).toDouble(),
-                          minY: minY,
-                          maxY: maxY,
-                          lineTouchData: LineTouchData(
-                            touchTooltipData: LineTouchTooltipData(
-                              tooltipPadding: const EdgeInsets.all(8),
-                              getTooltipItems: (spots) => spots.map((spot) {
-                                String axisLabel;
-                                Color axisColor;
-                                switch (spot.barIndex) {
-                                  case 0:
-                                    axisLabel = 'X';
-                                    axisColor = chartColors.xAxis!;
-                                    break;
-                                  case 1:
-                                    axisLabel = 'Y';
-                                    axisColor = chartColors.yAxis!;
-                                    break;
-                                  case 2:
-                                    axisLabel = 'Z';
-                                    axisColor = chartColors.zAxis!;
-                                    break;
-                                  default:
-                                    axisLabel = '';
-                                    axisColor = Colors.white;
-                                }
-                                return LineTooltipItem(
-                                  '$axisLabel: ${spot.y.toStringAsFixed(2)}',
-                                  textTheme.bodySmall!.copyWith(
-                                    color: axisColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                          gridData: FlGridData(
-                            drawVerticalLine: false,
-                            horizontalInterval: 1,
-                            getDrawingHorizontalLine: (value) => FlLine(
-                              color: colorScheme.outlineVariant.withValues(alpha: 0.3),
-                              strokeWidth: 0.8,
-                            ),
-                          ),
-                          titlesData: FlTitlesData(
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: data.isNotEmpty,
-                                interval: data.isEmpty
-                                    ? 1.0
-                                    : (data.length / 5).floor().toDouble().clamp(
-                                        1.0,
-                                        data.length.toDouble(),
-                                      ),
-                                getTitlesWidget: (value, meta) {
-                                  if (value == 0 || value == (data.length - 1)) {
-                                    return SideTitleWidget(
-                                      meta: meta,
-                                      child: Text(
-                                        value.toInt().toString(),
-                                        style: textTheme.bodySmall?.copyWith(
-                                          color: colorScheme.onSurfaceVariant,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  return const SizedBox.shrink();
-                                },
-                              ),
-                            ),
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                interval: yInterval,
-                                getTitlesWidget: (value, meta) => Text(
-                                  value.toStringAsFixed(1),
-                                  style: textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                reservedSize: 32,
-                              ),
-                            ),
-                            topTitles: const AxisTitles(),
-                            rightTitles: const AxisTitles(),
-                          ),
-                          borderData: FlBorderData(
-                            show: true,
-                            border: Border(
-                              left: BorderSide(color: colorScheme.outlineVariant, width: 1.2),
-                              bottom: BorderSide(color: colorScheme.outlineVariant, width: 1.2),
-                            ),
-                          ),
-                          lineBarsData: [
-                            if (settingsState.settings.showXAxis)
-                              _buildLine(data.map((e) => e.x).toList(), chartColors.xAxis!, 'X'),
-                            if (settingsState.settings.showYAxis)
-                              _buildLine(data.map((e) => e.y).toList(), chartColors.yAxis!, 'Y'),
-                            if (settingsState.settings.showZAxis)
-                              _buildLine(data.map((e) => e.z).toList(), chartColors.zAxis!, 'Z'),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (settingsState.settings.showXAxis)
-                          _LegendItem(color: chartColors.xAxis!, label: 'X'),
-                        const SizedBox(width: 12),
-                        if (settingsState.settings.showYAxis)
-                          _LegendItem(color: chartColors.yAxis!, label: 'Y'),
-                        const SizedBox(width: 12),
-                        if (settingsState.settings.showZAxis)
-                          _LegendItem(color: chartColors.zAxis!, label: 'Z'),
-                      ],
-                    ),
-                  ],
-                ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (settingsState.settings.showXAxis) _LegendItem(color: chartColors.xAxis!, label: 'X'),
+                      const SizedBox(width: 12),
+                      if (settingsState.settings.showYAxis) _LegendItem(color: chartColors.yAxis!, label: 'Y'),
+                      const SizedBox(width: 12),
+                      if (settingsState.settings.showZAxis) _LegendItem(color: chartColors.zAxis!, label: 'Z'),
+                    ],
+                  ),
+                ],
               ),
             );
           },

@@ -1,7 +1,4 @@
-enum SensorType {
-  accelerometer,
-  gyroscope,
-}
+enum SensorType { accelerometer, gyroscope }
 
 extension SensorTypeExtension on SensorType {
   String get name {

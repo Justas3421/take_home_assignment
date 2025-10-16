@@ -30,101 +30,94 @@ class SensorExportControls extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Semantics(
-          button: true,
-          label: 'Capture chart as image',
-          hint: 'Saves a screenshot of the current chart to your device',
-          child: OutlinedButton.icon(
-            onPressed: () async {
-              final image = await screenshotService.captureWidget(chartKey);
-              if (image != null) {
-                final File? file = await fileSaveService.saveImage(
-                  image,
-                  fileName:
-                      '${sensorType.name}_screenshot_${DateTime.now().millisecondsSinceEpoch}',
-                );
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        file == null ? 'Failed to save screenshot.' : 'Screenshot saved!',
-                        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
-                      ),
-                      backgroundColor: colorScheme.inverseSurface,
-                    ),
-                  );
-                }
-              }
-            },
-            icon: Icon(Icons.camera_alt_rounded, color: colorScheme.primary),
-            label: Text(
-              'Capture chart',
-              style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant),
-            ),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              side: BorderSide(color: colorScheme.outline),
-            ),
+    return PopupMenuButton<String>(
+      child: Semantics(
+        button: true,
+        label: 'Export options',
+        hint: 'Shows options to export the chart as an image or the data as a CSV file',
+        child: OutlinedButton.icon(
+          onPressed: null,
+          icon: Icon(Icons.download_rounded, color: colorScheme.primary),
+          label: Text('Export', style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            side: BorderSide(color: colorScheme.outline),
           ),
         ),
-        const SizedBox(height: 8),
-        Semantics(
-          button: true,
-          label: 'Export data to CSV',
-          hint: 'Exports currently captured sensor data as a CSV file',
-          child: OutlinedButton.icon(
-            onPressed: () async {
-              final String? csvValue = await csvExportService.exportSensorData(
-                bloc.state.history,
-                sensorType.name,
-              );
-
-              if (context.mounted) {
-                if (csvValue == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'No data to export.',
-                        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
-                      ),
-                      backgroundColor: colorScheme.inverseSurface,
-                    ),
-                  );
-                  return;
-                }
-
-                final String? value = await fileSaveService.saveCsv(
-                  csvValue,
-                  fileName:
-                      '${sensorType.name}_data_${DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now())}',
-                );
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      value == null ? 'Failed to export data.' : 'Data exported to CSV!',
-                      style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
-                    ),
-                    backgroundColor: colorScheme.inverseSurface,
-                  ),
-                );
-              }
-            },
-            icon: Icon(Icons.download_rounded, color: colorScheme.primary),
-            label: Text(
-              'Export as CSV',
-              style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant),
-            ),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              side: BorderSide(color: colorScheme.outline),
-            ),
+      ),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'capture',
+          child: Row(
+            children: [
+              Icon(Icons.camera_alt_rounded, color: colorScheme.primary),
+              const SizedBox(width: 12),
+              Text('Capture chart', style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'csv',
+          child: Row(
+            children: [
+              Icon(Icons.description_rounded, color: colorScheme.primary),
+              const SizedBox(width: 12),
+              Text('Export as CSV', style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
+            ],
           ),
         ),
       ],
+      onSelected: (String value) async {
+        if (value == 'capture') {
+          final image = await screenshotService.captureWidget(chartKey);
+          if (image != null) {
+            final File? file = await fileSaveService.saveImage(
+              image,
+              fileName: '${sensorType.name}_screenshot_${DateTime.now().millisecondsSinceEpoch}',
+            );
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    file == null ? 'Failed to save screenshot.' : 'Screenshot saved!',
+                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
+                  ),
+                  backgroundColor: colorScheme.inverseSurface,
+                ),
+              );
+            }
+          }
+        } else if (value == 'csv') {
+          final String? csvValue = await csvExportService.exportSensorData(bloc.state.history, sensorType.name);
+          if (context.mounted) {
+            if (csvValue == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'No data to export.',
+                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
+                  ),
+                  backgroundColor: colorScheme.inverseSurface,
+                ),
+              );
+              return;
+            }
+            final String? path = await fileSaveService.saveCsv(
+              csvValue,
+              fileName: '${sensorType.name}_data_${DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now())}',
+            );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  path == null ? 'Failed to export data.' : 'Data exported to CSV!',
+                  style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
+                ),
+                backgroundColor: colorScheme.inverseSurface,
+              ),
+            );
+          }
+        }
+      },
     );
   }
 }

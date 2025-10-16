@@ -2,30 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AppTheme {
-  static const Color _primarySeedColor = Color(0xFF356899);
+  static const Color _primarySeedColor = Color.fromARGB(255, 8, 114, 212);
 
-  static const Color _chartXAxisLight = Color(0xFFE57373);
-  static const Color _chartYAxisLight = Color(0xFF4DB6AC);
-  static const Color _chartZAxisLight = Color(0xFF64B5F6);
-
-  static const Color _chartXAxisDark = Color(0xFFEF9A9A);
-  static const Color _chartYAxisDark = Color(0xFF80CBC4);
-  static const Color _chartZAxisDark = Color(0xFF90CAF9);
+  static final Color _chartXAxis = Colors.red.shade400;
+  static final Color _chartYAxis = Colors.green.shade400;
+  static final Color _chartZAxis = Colors.blue.shade400;
 
   static final ThemeData lightTheme = _buildTheme(
     brightness: Brightness.light,
     seedColor: _primarySeedColor,
-    chartX: _chartXAxisLight,
-    chartY: _chartYAxisLight,
-    chartZ: _chartZAxisLight,
+    chartX: _chartXAxis,
+    chartY: _chartYAxis,
+    chartZ: _chartZAxis,
   );
 
   static final ThemeData darkTheme = _buildTheme(
     brightness: Brightness.dark,
     seedColor: _primarySeedColor,
-    chartX: _chartXAxisDark,
-    chartY: _chartYAxisDark,
-    chartZ: _chartZAxisDark,
+    chartX: _chartXAxis,
+    chartY: _chartYAxis,
+    chartZ: _chartZAxis,
   );
 
   static ThemeData _buildTheme({

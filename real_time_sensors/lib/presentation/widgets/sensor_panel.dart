@@ -24,7 +24,7 @@ class SensorPanel extends StatelessWidget {
     required this.fileSaveService,
   });
 
-  final _chartKey = GlobalKey();
+  final _chartKey = GlobalKey(debugLabel: 'screenShotKey');
 
   @override
   Widget build(BuildContext context) {
@@ -72,12 +72,8 @@ class SensorPanel extends StatelessWidget {
                             style: FilledButton.styleFrom(
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(20),
-                              backgroundColor: state.isCapturing
-                                  ? colorScheme.tertiaryContainer
-                                  : colorScheme.primaryContainer,
-                              foregroundColor: state.isCapturing
-                                  ? colorScheme.onTertiaryContainer
-                                  : colorScheme.onPrimaryContainer,
+                              backgroundColor: state.isCapturing ? colorScheme.secondary : colorScheme.primary,
+                              foregroundColor: state.isCapturing ? colorScheme.onSecondary : colorScheme.onTertiary,
                             ),
                             child: Icon(state.isCapturing ? Icons.pause_rounded : Icons.play_arrow_rounded, size: 24),
                           ),
