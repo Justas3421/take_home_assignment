@@ -8,24 +8,19 @@ import 'package:sensors_plus/sensors_plus.dart';
 
 class DeviceSensorRepositoryImpl implements SensorRepository {
   static const _channel = MethodChannel('com.example.real_time_sensors/sensor');
+  static const Duration _defaultSamplingPeriod = SensorInterval.gameInterval;
 
   @override
   Stream<SensorDataPoint> getSensorStream(SensorType type) {
     switch (type) {
       case SensorType.accelerometer:
         return SensorsPlatform.instance
-            .userAccelerometerEventStream(samplingPeriod: SensorInterval.gameInterval)
-            .map(
-              (event) =>
-                  SensorDataPoint(timestamp: event.timestamp, x: event.x, y: event.y, z: event.z),
-            );
+            .userAccelerometerEventStream(samplingPeriod: _defaultSamplingPeriod)
+            .map((event) => SensorDataPoint(timestamp: event.timestamp, x: event.x, y: event.y, z: event.z));
       case SensorType.gyroscope:
         return SensorsPlatform.instance
-            .gyroscopeEventStream(samplingPeriod: SensorInterval.gameInterval)
-            .map(
-              (event) =>
-                  SensorDataPoint(timestamp: event.timestamp, x: event.x, y: event.y, z: event.z),
-            );
+            .gyroscopeEventStream(samplingPeriod: _defaultSamplingPeriod)
+            .map((event) => SensorDataPoint(timestamp: event.timestamp, x: event.x, y: event.y, z: event.z));
     }
   }
 

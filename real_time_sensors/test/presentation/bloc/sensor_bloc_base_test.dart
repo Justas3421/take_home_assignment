@@ -36,13 +36,10 @@ class TestSensorState extends SensorState {
 
 class TestSensorBloc extends SensorBlocBase<SensorEvent, TestSensorState> {
   TestSensorBloc({
-    required StartSensorStreamUseCase startSensorStreamUseCase,
-    required SettingsBloc settingsBloc,
-    required SensorType sensorType,
+    required super.startSensorStreamUseCase,
+    required super.settingsBloc,
+    required super.sensorType,
   }) : super(
-         startSensorStreamUseCase: startSensorStreamUseCase,
-         settingsBloc: settingsBloc,
-         sensorType: sensorType,
          initialState: const TestSensorState(isCapturing: false, history: []),
        );
 

@@ -4,7 +4,9 @@ import 'package:real_time_sensors/presentation/bloc/settings/settings_bloc.dart'
 
 class SettingsBottomSheet extends StatelessWidget {
   const SettingsBottomSheet({super.key});
-
+  static const double _kRefreshRateMin = 10;
+  static const double _kRefreshRateMax = 50;
+  static const int _kRefreshRateDivisions = 4;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -35,9 +37,9 @@ class SettingsBottomSheet extends StatelessWidget {
                 ),
                 Slider(
                   value: state.settings.refreshRateHz.toDouble(),
-                  min: 10,
-                  max: 50,
-                  divisions: 4,
+                  min: _kRefreshRateMin,
+                  max: _kRefreshRateMax,
+                  divisions: _kRefreshRateDivisions,
                   label: '${state.settings.refreshRateHz} Hz',
                   semanticFormatterCallback: (value) => '${value.round()} hertz',
                   activeColor: colorScheme.primary,

@@ -8,6 +8,8 @@ import 'package:real_time_sensors/domain/models/sensor_data.dart';
 import 'package:real_time_sensors/domain/models/sensor_type.dart';
 import 'package:real_time_sensors/presentation/bloc/sensor_bloc_base/sensor_bloc_base.dart';
 import 'package:real_time_sensors/presentation/bloc/settings/settings_bloc.dart';
+import 'package:real_time_sensors/presentation/widgets/sensor_chart_header.dart';
+import 'package:real_time_sensors/presentation/widgets/sensor_chart_legend.dart';
 
 class SensorChart extends StatefulWidget {
   final SensorBlocBase bloc;
@@ -59,75 +61,11 @@ class _SensorChartState extends State<SensorChart> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            widget.sensorType.name,
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: colorScheme.onSurface,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-
-                        Row(
-                          children: [
-                            Tooltip(
-                              message: 'Reset Zoom',
-                              child: Semantics(
-                                button: true,
-                                label: 'Reset zoom',
-                                hint: 'Resets chart zoom and pan',
-                                child: IconButton(
-                                  icon: Icon(Icons.zoom_out_map_rounded, color: colorScheme.onSurfaceVariant),
-                                  onPressed: _resetZoom,
-                                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                                  padding: EdgeInsets.zero,
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                              ),
-                            ),
-                            Tooltip(
-                              message: 'Zoom In',
-                              child: Semantics(
-                                button: true,
-                                label: 'Zoom in',
-                                hint: 'Increases chart zoom level',
-                                child: IconButton(
-                                  icon: Icon(Icons.zoom_in_rounded, color: colorScheme.onSurfaceVariant),
-                                  onPressed: _zoomIn,
-                                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                                  padding: EdgeInsets.zero,
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                              ),
-                            ),
-                            Tooltip(
-                              message: 'Zoom Out',
-                              child: Semantics(
-                                button: true,
-                                label: 'Zoom out',
-                                hint: 'Decreases chart zoom level',
-                                child: IconButton(
-                                  icon: Icon(Icons.zoom_out_rounded, color: colorScheme.onSurfaceVariant),
-                                  onPressed: _zoomOut,
-                                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                                  padding: EdgeInsets.zero,
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  SensorChartHeader(
+                    transformationController: _transformationController,
+                    sensorType: widget.sensorType,
+                    bloc: widget.bloc,
                   ),
-
                   Expanded(
                     child: LineChart(
                       transformationConfig: FlTransformationConfig(
@@ -229,18 +167,8 @@ class _SensorChartState extends State<SensorChart> {
                       ),
                     ),
                   ),
-
+                  const SensorChartLegend(),
                   const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (settingsState.settings.showXAxis) _LegendItem(color: chartColors.xAxis!, label: 'X'),
-                      const SizedBox(width: 12),
-                      if (settingsState.settings.showYAxis) _LegendItem(color: chartColors.yAxis!, label: 'Y'),
-                      const SizedBox(width: 12),
-                      if (settingsState.settings.showZAxis) _LegendItem(color: chartColors.zAxis!, label: 'Z'),
-                    ],
-                  ),
                 ],
               ),
             );
@@ -279,47 +207,5 @@ class _SensorChartState extends State<SensorChart> {
     final pow10 = math.pow(10, (math.log(raw) / math.ln10).floor());
     final candidates = [1, 2, 2.5, 5, 10].map((m) => m * pow10);
     return candidates.firstWhere((c) => c >= raw, orElse: () => 10 * pow10).toDouble();
-  }
-
-  void _resetZoom() => _transformationController.value = Matrix4.identity();
-  void _zoomIn() => _transformationController.value *= Matrix4.diagonal3Values(1.1, 1.1, 1);
-  void _zoomOut() => _transformationController.value *= Matrix4.diagonal3Values(0.9, 0.9, 1);
-}
-
-class _LegendItem extends StatelessWidget {
-  final Color color;
-  final String label;
-
-  const _LegendItem({required this.color, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    return Semantics(
-      container: true,
-      label: '$label legend',
-      value: 'Color ${_colorToName(color)}',
-      child: Row(
-        children: [
-          Container(
-            width: 24,
-            height: 8,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(2), color: color),
-          ),
-          const SizedBox(width: 8),
-          Text(label, style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
-        ],
-      ),
-    );
-  }
-
-  String _colorToName(Color c) {
-    if (c == Colors.red) return 'red';
-    if (c == Colors.green) return 'green';
-    if (c == Colors.blue) return 'blue';
-    return 'custom color';
   }
 }

@@ -36,7 +36,7 @@ class SensorApp extends StatelessWidget {
         child: BlocBuilder<SettingsBloc, SettingsState>(
           builder: (context, state) {
             return MaterialApp(
-              title: 'SensorScope',
+              title: 'Sensor Visualization',
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: state.settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
