@@ -4,12 +4,11 @@ class GyroscopeState extends SensorState {
   const GyroscopeState({
     super.isCapturing = false,
     super.history = const [],
-    super.sensorAvailable = false,
     super.errorMessage,
   });
 
   @override
-  List<Object?> get props => [isCapturing, history, sensorAvailable, errorMessage];
+  List<Object?> get props => [isCapturing, history, errorMessage];
   
   @override
   GyroscopeState copyWith({
@@ -21,7 +20,6 @@ class GyroscopeState extends SensorState {
     return GyroscopeState(
       isCapturing: isCapturing ?? this.isCapturing,
       history: history ?? this.history,
-      sensorAvailable: sensorAvailable ?? this.sensorAvailable,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }

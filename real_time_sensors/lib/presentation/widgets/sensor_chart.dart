@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,6 +47,13 @@ class _SensorChartState extends State<SensorChart> {
         final data = sensorState.history;
         return BlocBuilder<SettingsBloc, SettingsState>(
           builder: (context, settingsState) {
+            final min = _getMinY(data);
+            final max = _getMaxY(data);
+            final range = (max - min).abs();
+            final pad = range == 0 ? 1.0 : range * 0.1;
+            final minY = min - pad;
+            final maxY = max + pad;
+            final yInterval = _calculateYInterval(minY, maxY);
             return SizedBox(
               height: 200,
               width: double.infinity,
@@ -78,7 +87,10 @@ class _SensorChartState extends State<SensorChart> {
                                   label: 'Reset zoom',
                                   hint: 'Resets chart zoom and pan',
                                   child: IconButton(
-                                    icon: Icon(Icons.zoom_out_map_rounded, color: colorScheme.onSurfaceVariant),
+                                    icon: Icon(
+                                      Icons.zoom_out_map_rounded,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
                                     onPressed: _resetZoom,
                                     constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                                     padding: EdgeInsets.zero,
@@ -93,7 +105,10 @@ class _SensorChartState extends State<SensorChart> {
                                   label: 'Zoom in',
                                   hint: 'Increases chart zoom level',
                                   child: IconButton(
-                                    icon: Icon(Icons.zoom_in_rounded, color: colorScheme.onSurfaceVariant),
+                                    icon: Icon(
+                                      Icons.zoom_in_rounded,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
                                     onPressed: _zoomIn,
                                     constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                                     padding: EdgeInsets.zero,
@@ -108,7 +123,10 @@ class _SensorChartState extends State<SensorChart> {
                                   label: 'Zoom out',
                                   hint: 'Decreases chart zoom level',
                                   child: IconButton(
-                                    icon: Icon(Icons.zoom_out_rounded, color: colorScheme.onSurfaceVariant),
+                                    icon: Icon(
+                                      Icons.zoom_out_rounded,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
                                     onPressed: _zoomOut,
                                     constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                                     padding: EdgeInsets.zero,
@@ -132,8 +150,8 @@ class _SensorChartState extends State<SensorChart> {
                         LineChartData(
                           minX: 0,
                           maxX: (data.length - 1).toDouble(),
-                          minY: _getMinY(data) - 1,
-                          maxY: _getMaxY(data) + 1,
+                          minY: minY,
+                          maxY: maxY,
                           lineTouchData: LineTouchData(
                             touchTooltipData: LineTouchTooltipData(
                               tooltipPadding: const EdgeInsets.all(8),
@@ -159,7 +177,10 @@ class _SensorChartState extends State<SensorChart> {
                                 }
                                 return LineTooltipItem(
                                   '$axisLabel: ${spot.y.toStringAsFixed(2)}',
-                                  textTheme.bodySmall!.copyWith(color: axisColor, fontWeight: FontWeight.bold),
+                                  textTheme.bodySmall!.copyWith(
+                                    color: axisColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 );
                               }).toList(),
                             ),
@@ -167,8 +188,10 @@ class _SensorChartState extends State<SensorChart> {
                           gridData: FlGridData(
                             drawVerticalLine: false,
                             horizontalInterval: 1,
-                            getDrawingHorizontalLine: (value) =>
-                                FlLine(color: colorScheme.outlineVariant.withValues(alpha: 0.3), strokeWidth: 0.8),
+                            getDrawingHorizontalLine: (value) => FlLine(
+                              color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                              strokeWidth: 0.8,
+                            ),
                           ),
                           titlesData: FlTitlesData(
                             bottomTitles: AxisTitles(
@@ -176,14 +199,19 @@ class _SensorChartState extends State<SensorChart> {
                                 showTitles: data.isNotEmpty,
                                 interval: data.isEmpty
                                     ? 1.0
-                                    : (data.length / 5).floor().toDouble().clamp(1.0, data.length.toDouble()),
+                                    : (data.length / 5).floor().toDouble().clamp(
+                                        1.0,
+                                        data.length.toDouble(),
+                                      ),
                                 getTitlesWidget: (value, meta) {
                                   if (value == 0 || value == (data.length - 1)) {
                                     return SideTitleWidget(
                                       meta: meta,
                                       child: Text(
                                         value.toInt().toString(),
-                                        style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                                        style: textTheme.bodySmall?.copyWith(
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
                                       ),
                                     );
                                   }
@@ -194,10 +222,12 @@ class _SensorChartState extends State<SensorChart> {
                             leftTitles: AxisTitles(
                               sideTitles: SideTitles(
                                 showTitles: true,
-                                interval: 1,
+                                interval: yInterval,
                                 getTitlesWidget: (value, meta) => Text(
                                   value.toStringAsFixed(1),
-                                  style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                                 reservedSize: 32,
                               ),
@@ -228,11 +258,14 @@ class _SensorChartState extends State<SensorChart> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (settingsState.settings.showXAxis) _LegendItem(color: chartColors.xAxis!, label: 'X'),
+                        if (settingsState.settings.showXAxis)
+                          _LegendItem(color: chartColors.xAxis!, label: 'X'),
                         const SizedBox(width: 12),
-                        if (settingsState.settings.showYAxis) _LegendItem(color: chartColors.yAxis!, label: 'Y'),
+                        if (settingsState.settings.showYAxis)
+                          _LegendItem(color: chartColors.yAxis!, label: 'Y'),
                         const SizedBox(width: 12),
-                        if (settingsState.settings.showZAxis) _LegendItem(color: chartColors.zAxis!, label: 'Z'),
+                        if (settingsState.settings.showZAxis)
+                          _LegendItem(color: chartColors.zAxis!, label: 'Z'),
                       ],
                     ),
                   ],
@@ -267,6 +300,13 @@ class _SensorChartState extends State<SensorChart> {
   double _getMaxY(List<SensorDataPoint> data) {
     final all = data.expand((e) => [e.x, e.y, e.z]);
     return all.isEmpty ? 0 : all.reduce((a, b) => a > b ? a : b);
+  }
+
+  double _calculateYInterval(double minY, double maxY, {int targetTicks = 5}) {
+    final raw = (maxY - minY).abs() / targetTicks;
+    final pow10 = math.pow(10, (math.log(raw) / math.ln10).floor());
+    final candidates = [1, 2, 2.5, 5, 10].map((m) => m * pow10);
+    return candidates.firstWhere((c) => c >= raw, orElse: () => 10 * pow10).toDouble();
   }
 
   void _resetZoom() => _transformationController.value = Matrix4.identity();

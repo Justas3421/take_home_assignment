@@ -4,15 +4,32 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class FileSaveService {
   Future<File?> saveImage(Uint8List imageBytes, {required String fileName}) async {
     try {
-      Directory.systemTemp.path;
-      final file = await File('${Directory.systemTemp.path}/$fileName.png').create();
-      await file.writeAsBytes(imageBytes);
+      if (!await Gal.hasAccess()) {
+        await Gal.requestAccess();
+      }
+
+      if (!await Gal.hasAccess()) {
+        await openAppSettings();
+        return null;
+      }
+
+      final file = await File('${Directory.systemTemp.path}/$fileName.png').create(recursive: true);
+      await file.writeAsBytes(imageBytes, flush: true);
+
       await Gal.putImage(file.path);
       return file;
+    } on GalException catch (e) {
+      if (e.type == GalExceptionType.accessDenied) {
+        await openAppSettings();
+        return null;
+      }
+      debugPrint('Error saving image (gal): $e');
+      return null;
     } catch (e) {
       debugPrint('Error saving image: $e');
       return null;

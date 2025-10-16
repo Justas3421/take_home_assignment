@@ -22,14 +22,6 @@ class _SensorErrorOccurred extends SensorEvent {
   List<Object?> get props => [message];
 }
 
-class _SensorAvailabilityChecked extends SensorEvent {
-  final bool available;
-  const _SensorAvailabilityChecked(this.available);
-
-  @override
-  List<Object?> get props => [available];
-}
-
 class StartSensorCapture extends SensorEvent {}
 
 class PauseSensorCapture extends SensorEvent {}

@@ -15,11 +15,17 @@ class DeviceSensorRepositoryImpl implements SensorRepository {
       case SensorType.accelerometer:
         return SensorsPlatform.instance
             .userAccelerometerEventStream(samplingPeriod: SensorInterval.gameInterval)
-            .map((event) => SensorDataPoint(timestamp: event.timestamp, x: event.x, y: event.y, z: event.z));
+            .map(
+              (event) =>
+                  SensorDataPoint(timestamp: event.timestamp, x: event.x, y: event.y, z: event.z),
+            );
       case SensorType.gyroscope:
         return SensorsPlatform.instance
             .gyroscopeEventStream(samplingPeriod: SensorInterval.gameInterval)
-            .map((event) => SensorDataPoint(timestamp: event.timestamp, x: event.x, y: event.y, z: event.z));
+            .map(
+              (event) =>
+                  SensorDataPoint(timestamp: event.timestamp, x: event.x, y: event.y, z: event.z),
+            );
     }
   }
 

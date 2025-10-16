@@ -43,7 +43,8 @@ class SensorExportControls extends StatelessWidget {
               if (image != null) {
                 final File? file = await fileSaveService.saveImage(
                   image,
-                  fileName: '${sensorType.name}_screenshot_${DateTime.now().millisecondsSinceEpoch}',
+                  fileName:
+                      '${sensorType.name}_screenshot_${DateTime.now().millisecondsSinceEpoch}',
                 );
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -59,7 +60,10 @@ class SensorExportControls extends StatelessWidget {
               }
             },
             icon: Icon(Icons.camera_alt_rounded, color: colorScheme.primary),
-            label: Text('Capture chart', style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
+            label: Text(
+              'Capture chart',
+              style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+            ),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               side: BorderSide(color: colorScheme.outline),
@@ -73,7 +77,10 @@ class SensorExportControls extends StatelessWidget {
           hint: 'Exports currently captured sensor data as a CSV file',
           child: OutlinedButton.icon(
             onPressed: () async {
-              final String? csvValue = await csvExportService.exportSensorData(bloc.state.history, sensorType.name);
+              final String? csvValue = await csvExportService.exportSensorData(
+                bloc.state.history,
+                sensorType.name,
+              );
 
               if (context.mounted) {
                 if (csvValue == null) {
@@ -89,14 +96,16 @@ class SensorExportControls extends StatelessWidget {
                   return;
                 }
 
-                await fileSaveService.saveCsv(
+                final String? value = await fileSaveService.saveCsv(
                   csvValue,
-                  fileName: '${sensorType.name}_data_${DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now())}',
+                  fileName:
+                      '${sensorType.name}_data_${DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now())}',
                 );
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Data exported to CSV!',
+                      value == null ? 'Failed to export data.' : 'Data exported to CSV!',
                       style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
                     ),
                     backgroundColor: colorScheme.inverseSurface,
@@ -105,7 +114,10 @@ class SensorExportControls extends StatelessWidget {
               }
             },
             icon: Icon(Icons.download_rounded, color: colorScheme.primary),
-            label: Text('Export as CSV', style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
+            label: Text(
+              'Export as CSV',
+              style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+            ),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               side: BorderSide(color: colorScheme.outline),
